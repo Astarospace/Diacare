@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="section-padding" style="min-height: 80vh; display: flex; align-items: center; background-color: var(--alice-blue);">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card shadow-lg border-0 rounded-4 p-4">
+                    <div class="text-center mb-4">
+                        <p class="section-subtitle">Join Diacare</p>
+                        <h2 class="headline-md mb-0">Create Account</h2>
+                    </div>
+
+                    <form action="{{ url_for('register') }}" method="post">
+                        {% if error %}
+                            <div class="text-danger mb-3 small">{{ error }}</div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label for="FullName" class="form-label fw-bold">Full Name</label>
+                            <input name="FullName" id="FullName" class="form-control" placeholder="Enter your full name" value="{{ full_name or '' }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="PhoneNumber" class="form-label fw-bold">Phone Number</label>
+                            <input name="PhoneNumber" id="PhoneNumber" class="form-control" placeholder="Enter your phone number" value="{{ phone or '' }}" required>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="Age" class="form-label fw-bold">Age</label>
+                                <input name="Age" id="Age" type="number" class="form-control" placeholder="Age" value="{{ age or '' }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="Gender" class="form-label fw-bold">Gender</label>
+                                <select name="Gender" id="Gender" class="form-select">
+                                    <option value="1" {% if gender == 1 %}selected{% endif %}>Male</option>
+                                    <option value="2" {% if gender == 2 %}selected{% endif %}>Female</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="Password" class="form-label fw-bold">Password</label>
+                            <input name="Password" id="Password" type="password" class="form-control" placeholder="Create a password" value="{{ password or '' }}" required>
+                        </div>
+
+                        <button type="submit" class="btn-medical w-100 py-3 mb-3 border-0">CREATE</button>
+
+                        <p class="text-center text-muted small mt-2">
+                            Already have an account? <a href="{{ url_for('login') }}" style="color: var(--verdigris); font-weight: 700;">Login here</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <script>alert('{{ message }}');</script>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+{% endblock %}
