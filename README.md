@@ -29,7 +29,7 @@ Diacare is a comprehensive flask web application that connects patients with doc
 
 ---
 
-## Tech Stack (Suggested)
+## Tech Stack 
 
 | Layer          | Technology                        |
 |----------------|-----------------------------------|
