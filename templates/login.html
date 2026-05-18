@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="section-padding" style="min-height: 80vh; display: flex; align-items: center; background-color: var(--alice-blue);">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="card shadow-lg border-0 rounded-4 p-4">
+                    <div class="text-center mb-4">
+                        <p class="section-subtitle">Welcome Back</p>
+                        <h2 class="headline-md mb-0">Login</h2>
+                    </div>
+
+                    <form action="{{ url_for('login') }}" method="post">
+                        {% if error %}
+                            <div class="text-danger mb-3 small">{{ error }}</div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label for="PhoneNumber" class="form-label fw-bold">Phone Number</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0"><ion-icon name="call-outline" style="color: var(--verdigris);"></ion-icon></span>
+                                <input name="PhoneNumber" id="PhoneNumber" class="form-control border-start-0 ps-0" placeholder="Enter your phone number" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="Password" class="form-label fw-bold">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0"><ion-icon name="lock-closed-outline" style="color: var(--verdigris);"></ion-icon></span>
+                                <input name="Password" id="Password" type="password" class="form-control border-start-0 ps-0" placeholder="Enter your password" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="UserType" class="form-label fw-bold">Login As</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0"><ion-icon name="person-outline" style="color: var(--verdigris);"></ion-icon></span>
+                                <select name="UserType" id="UserType" class="form-select border-start-0 ps-0">
+                                    <option value="Patient">Patient</option>
+                                    <option value="Doctor">Doctor</option>
+                                    <option value="Admin">Admin</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-medical w-100 py-3 mb-3 border-0">PROCEED</button>
+
+                        <p class="text-center text-muted small mt-2">
+                            New to our website? <a href="{{ url_for('register') }}" style="color: var(--verdigris); font-weight: 700;">Create an account now!</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

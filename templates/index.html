@@ -1,0 +1,103 @@
+{% extends "layout.html" %}
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6 mb-5 mb-md-0">
+                <p class="hero-subtitle">Welcome To Diacare</p>
+                <h1 class="hero-title">Your Health,<br />Our Priority.</h1>
+                <p class="lead mt-4" style="line-height: 1.8; opacity: 0.9;">
+                    Diacare provides comprehensive and personalized care for diabetic patients. Our platform connects you with highly specialized professionals to help you manage your condition, ensuring you live a healthy and fulfilling life.
+                </p>
+            </div>
+            <div class="col-md-6 text-center">
+                <img src="{{ url_for('static', filename='images/hero-banner.png') }}" alt="Hero Banner" class="img-fluid" style="max-width: 90%;">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Section -->
+<section class="service-section">
+    <div class="container">
+        <div class="row g-4 justify-content-center">
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="service-card">
+                    <img src="{{ url_for('static', filename='images/icon-1.png') }}" alt="Primary Care" width="70" class="card-icon mx-auto">
+                    <h3 class="card-title h4">Primary Care</h3>
+                    <p class="card-text">Comprehensive initial assessments and continuous monitoring for your overall well-being.</p>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="service-card">
+                    <img src="{{ url_for('static', filename='images/icon-2.png') }}" alt="Endocrinology" width="70" class="card-icon mx-auto">
+                    <h3 class="card-title h4">Endocrinology</h3>
+                    <p class="card-text">Specialized care focusing on hormonal balance, insulin regulation, and metabolic health.</p>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="service-card">
+                    <img src="{{ url_for('static', filename='images/icon-3.png') }}" alt="Nephrology" width="70" class="card-icon mx-auto">
+                    <h3 class="card-title h4">Nephrology</h3>
+                    <p class="card-text">Expert evaluation and management of kidney health, crucial for diabetic patients.</p>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="service-card">
+                    <img src="{{ url_for('static', filename='images/icon-4.png') }}" alt="Cardiology" width="70" class="card-icon mx-auto">
+                    <h3 class="card-title h4">Cardiology</h3>
+                    <p class="card-text">Dedicated heart care to prevent and treat cardiovascular complications associated with diabetes.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section style="padding-top: 80px;" class="pb-0">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-md-6 align-self-center">
+                <p class="section-subtitle">About Us</p>
+                <h2 class="headline-md">Experienced Professionals</h2>
+                <p class="text-independece mb-4">
+                    Our doctors are highly trained professionals with years of specialized experience in managing diabetes. We understand that every patient's journey is unique, which is why our medical team is dedicated to providing personalized care plans, ensuring you receive the highest standard of treatment and support.
+                </p>
+                <ul class="list-unstyled text-independece">
+                    <li class="mb-2 d-flex align-items-center gap-2">
+                        <span style="color: var(--verdigris); font-size: 1.2rem;">&#10003;</span> Certified Specialists
+                    </li>
+                    <li class="mb-2 d-flex align-items-center gap-2">
+                        <span style="color: var(--verdigris); font-size: 1.2rem;">&#10003;</span> Personalized Care Plans
+                    </li>
+                    <li class="mb-2 d-flex align-items-center gap-2">
+                        <span style="color: var(--verdigris); font-size: 1.2rem;">&#10003;</span> Continuous Monitoring
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-6 text-center align-self-end">
+                <img src="{{ url_for('static', filename='images/about-banner.png') }}" alt="About Doctors" class="img-fluid" style="max-width: 90%; display: block; margin: 0 auto;">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Food Section -->
+<section class="section-padding bg-alice-blue">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-md-6 text-center">
+                <img src="{{ url_for('static', filename='images/food.webp') }}" alt="Healthy Food" class="img-fluid rounded shadow-sm" style="max-width: 90%;">
+            </div>
+            <div class="col-md-6">
+                <p class="section-subtitle">Diet & Nutrition</p>
+                <h2 class="headline-md">Healthy Eating Habits</h2>
+                <p class="text-independece">
+                    A diabetic patient needs to be careful with the foods they eat. Maintaining a balanced diet is one of the most effective ways to manage blood sugar levels and prevent complications. Focus on nutrient-rich foods, monitor carbohydrate intake, and work with our specialists to create a meal plan that fits your lifestyle.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
