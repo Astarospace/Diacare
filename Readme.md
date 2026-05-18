@@ -63,7 +63,7 @@ Diacare is a comprehensive flask web application that connects patients with doc
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-org/diacare.git
+   git clone https://github.com/Astarospace/Diacare.git
    cd Diacare
 2. **Run the app**
    ```bash
