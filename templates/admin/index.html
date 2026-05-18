@@ -1,0 +1,240 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="section-padding" style="background-color: var(--alice-blue); min-height: 80vh;">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="headline-md mb-0">Admin Control Panel</h2>
+            <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#addDoctorModal">
+                <ion-icon name="add-outline" class="me-1 align-middle"></ion-icon> Add New Doctor
+            </button>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-pills mb-4 gap-2" id="adminTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link {{ 'active' if active_tab == 'patients-tab' }} rounded-pill px-4" data-bs-toggle="pill" data-bs-target="#patients-tab">Patients</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link {{ 'active' if active_tab == 'doctors-tab' }} rounded-pill px-4" data-bs-toggle="pill" data-bs-target="#doctors-tab">Doctors</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link {{ 'active' if active_tab == 'appointments-tab' }} rounded-pill px-4" data-bs-toggle="pill" data-bs-target="#appointments-tab">Appointments</button>
+            </li>
+        </ul>
+
+        <div class="tab-content border-0 shadow-sm rounded-4 bg-white p-4">
+            <!-- Patients Tab -->
+            <div class="tab-pane fade {{ 'show active' if active_tab == 'patients-tab' }}" id="patients-tab">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Phone</th>
+                                <th>Password</th>
+                                <th>Age</th>
+                                <th>Gender</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in patients %}
+                                <tr id="row-patient-{{ p.Id }}">
+                                    <form action="{{ url_for('admin_update_patient') }}" method="post">
+                                        <input type="hidden" name="Id" value="{{ p.Id }}">
+                                        <input type="hidden" name="active_tab" value="patients-tab">
+                                        <td><span class="view-mode">{{ p.FullName }}</span><input name="FullName" value="{{ p.FullName }}" class="form-control form-control-sm edit-mode d-none"></td>
+                                        <td><span class="view-mode">{{ p.PhoneNumber }}</span><input name="PhoneNumber" value="{{ p.PhoneNumber }}" class="form-control form-control-sm edit-mode d-none"></td>
+                                        <td><span class="view-mode">********</span><input name="PasswordHash" value="{{ p.PasswordHash }}" class="form-control form-control-sm edit-mode d-none"></td>
+                                        <td><span class="view-mode">{{ p.Age }}</span><input name="Age" type="number" value="{{ p.Age }}" class="form-control form-control-sm edit-mode d-none"></td>
+                                        <td>
+                                            <span class="view-mode">{{ gender_name(p.Gender) }}</span>
+                                            <select name="Gender" class="form-select form-select-sm edit-mode d-none">
+                                                <option value="1" {% if p.Gender == GENDER_MALE %}selected{% endif %}>Male</option>
+                                                <option value="2" {% if p.Gender == GENDER_FEMALE %}selected{% endif %}>Female</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex gap-2">
+                                                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 view-mode" onclick="toggleEdit('patient', {{ p.Id }}, true)">Edit</button>
+                                                <button type="submit" class="btn btn-sm btn-success rounded-pill px-3 edit-mode d-none">Save</button>
+                                                <button type="button" class="btn btn-sm btn-secondary rounded-pill px-3 edit-mode d-none" onclick="toggleEdit('patient', {{ p.Id }}, false)">Cancel</button>
+                                                <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 view-mode" onclick="if(confirm('Are you sure? This will delete all related appointments and reviews.')) { document.getElementById('delete-patient-{{ p.Id }}').submit(); }">Delete</button>
+                                            </div>
+                                        </td>
+                                    </form>
+                                    <form id="delete-patient-{{ p.Id }}" action="{{ url_for('admin_delete_patient') }}" method="post" style="display:none;"><input type="hidden" name="id" value="{{ p.Id }}"><input type="hidden" name="active_tab" value="patients-tab"></form>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Doctors Tab -->
+            <div class="tab-pane fade {{ 'show active' if active_tab == 'doctors-tab' }}" id="doctors-tab">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Doctor</th>
+                                <th>Contact & Info</th>
+                                <th>Image & Specialty</th>
+                                <th>Rating</th>
+                                <th>Schedules</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for d in doctors %}
+                                <tr id="row-doctor-{{ d.Id }}">
+                                    <form action="{{ url_for('admin_update_doctor') }}" method="post">
+                                        <input type="hidden" name="id" value="{{ d.Id }}">
+                                        <input type="hidden" name="active_tab" value="doctors-tab">
+                                        <td><span class="view-mode fw-bold">{{ d.FullName }}</span><input name="fullName" value="{{ d.FullName }}" class="form-control form-control-sm edit-mode d-none"></td>
+                                        <td>
+                                            <div class="view-mode">{{ d.PhoneNumber }}<br><small class="text-muted">Password: ********</small></div>
+                                            <div class="edit-mode d-none">
+                                                <input name="phoneNumber" value="{{ d.PhoneNumber }}" class="form-control form-control-sm mb-1" placeholder="Phone">
+                                                <input name="passwordHash" value="{{ d.PasswordHash }}" class="form-control form-control-sm" placeholder="Password">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="view-mode">
+                                                <img src="{{ d.ImagePath }}" class="rounded shadow-sm mb-1" style="width: 40px; height: 40px; object-fit: cover;"><br>
+                                                <small>{{ d.Specialty }}</small>
+                                            </div>
+                                            <div class="edit-mode d-none">
+                                                <img src="{{ d.ImagePath }}" class="rounded shadow-sm mb-1" style="width: 40px; height: 40px; object-fit: cover;">
+                                                <input name="imagePath" value="{{ d.ImagePath }}" class="form-control form-control-sm mb-1" placeholder="Image Path">
+                                                <input name="specialty" value="{{ d.Specialty }}" class="form-control form-control-sm" placeholder="Specialty">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% set avg = (d.RatingSum / d.RatingCount) if d.RatingCount > 0 else 0 %}
+                                            <span class="badge bg-light text-dark border rounded-pill">{{ "%.1f"|format(avg) }} ({{ d.RatingCount }})</span>
+                                        </td>
+                                        <td>
+                                            <div class="view-mode">
+                                                {% for s in d.schedules %}<span class="badge bg-light text-dark border me-1">{{ s.Hours }}</span>{% endfor %}
+                                            </div>
+                                            <div class="edit-mode d-none">
+                                                {% for s in d.schedules %}<input name="scheduleHours" value="{{ s.Hours }}" class="form-control form-control-sm mb-1">{% endfor %}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex gap-2">
+                                                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 view-mode" onclick="toggleEdit('doctor', {{ d.Id }}, true)">Edit</button>
+                                                <button type="submit" class="btn btn-sm btn-success rounded-pill px-3 edit-mode d-none">Save</button>
+                                                <button type="button" class="btn btn-sm btn-secondary rounded-pill px-3 edit-mode d-none" onclick="toggleEdit('doctor', {{ d.Id }}, false)">Cancel</button>
+                                                <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 view-mode" onclick="if(confirm('Delete doctor? This removes all schedules, reviews and appointments.')) { document.getElementById('delete-doctor-{{ d.Id }}').submit(); }">Delete</button>
+                                            </div>
+                                        </td>
+                                    </form>
+                                    <form id="delete-doctor-{{ d.Id }}" action="{{ url_for('admin_delete_doctor') }}" method="post" style="display:none;"><input type="hidden" name="id" value="{{ d.Id }}"><input type="hidden" name="active_tab" value="doctors-tab"></form>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Appointments Tab -->
+            <div class="tab-pane fade {{ 'show active' if active_tab == 'appointments-tab' }}" id="appointments-tab">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Schedule</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for a in appointments %}
+                                <tr id="row-appt-{{ a.Id }}">
+                                    <form action="{{ url_for('admin_update_appointment') }}" method="post">
+                                        <input type="hidden" name="id" value="{{ a.Id }}">
+                                        <input type="hidden" name="active_tab" value="appointments-tab">
+                                        <td>{{ a.patient.FullName }}</td>
+                                        <td>{{ a.doctor.FullName }}</td>
+                                        <td>{{ a.schedule.Hours }}</td>
+                                        <td>
+                                            <span class="view-mode badge {{ 'bg-info' if a.Status == APPOINTMENT_COMPLETED else 'bg-warning text-dark' }}">{{ appointment_status_name(a.Status) }}</span>
+                                            <select name="status" class="form-select form-select-sm edit-mode d-none">
+                                                {% for val in [APPOINTMENT_PENDING, APPOINTMENT_ACCEPTED, APPOINTMENT_REJECTED, APPOINTMENT_COMPLETED] %}
+                                                    <option value="{{ val }}" {% if a.Status == val %}selected{% endif %}>{{ appointment_status_name(val) }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex gap-2">
+                                                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 view-mode {{ 'd-none' if a.Status in (APPOINTMENT_REJECTED, APPOINTMENT_COMPLETED) }}" onclick="toggleEdit('appt', {{ a.Id }}, true)">Edit</button>
+                                                <button type="submit" class="btn btn-sm btn-success rounded-pill px-3 edit-mode d-none">Save</button>
+                                                <button type="button" class="btn btn-sm btn-secondary rounded-pill px-3 edit-mode d-none" onclick="toggleEdit('appt', {{ a.Id }}, false)">Cancel</button>
+                                                <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 view-mode" onclick="if(confirm('Delete appointment? Schedule will become available.')) { document.getElementById('delete-appt-{{ a.Id }}').submit(); }">Delete</button>
+                                            </div>
+                                        </td>
+                                    </form>
+                                    <form id="delete-appt-{{ a.Id }}" action="{{ url_for('admin_delete_appointment') }}" method="post" style="display:none;"><input type="hidden" name="id" value="{{ a.Id }}"><input type="hidden" name="active_tab" value="appointments-tab"></form>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Add Doctor Modal -->
+<div class="modal fade" id="addDoctorModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title headline-sm">Add New Doctor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form action="{{ url_for('admin_add_doctor') }}" method="post">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Full Name</label>
+                        <input name="FullName" class="form-control rounded-3" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Phone Number</label>
+                        <input name="PhoneNumber" class="form-control rounded-3" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Specialty</label>
+                        <input name="Specialty" class="form-control rounded-3" placeholder="Diabetes Specialist" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Image Path</label>
+                        <input name="ImagePath" class="form-control rounded-3" placeholder="/images/doctor-placeholder.svg">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold">Password</label>
+                        <input name="PasswordHash" type="password" class="form-control rounded-3" placeholder="Default: Doctor@123">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 py-3 rounded-pill">CREATE ACCOUNT</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function toggleEdit(type, id, edit) {
+        const row = document.getElementById(`row-${type}-${id}`);
+        const viewModes = row.querySelectorAll('.view-mode');
+        const editModes = row.querySelectorAll('.edit-mode');
+        viewModes.forEach(el => el.classList.toggle('d-none', edit));
+        editModes.forEach(el => el.classList.toggle('d-none', !edit));
+    }
+</script>
+{% endblock %}
