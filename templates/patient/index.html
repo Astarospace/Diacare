@@ -1,0 +1,129 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="section-padding" style="background-color: var(--alice-blue); min-height: 80vh;">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Left Column: Patient Info -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    <div class="text-center mb-4">
+                        <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px;">
+                            <ion-icon name="person-outline" style="font-size: 3rem; color: var(--verdigris);"></ion-icon>
+                        </div>
+                        <h3 class="headline-sm mb-1">{{ patient.FullName }}</h3>
+                        <p class="text-muted small">Patient Account</p>
+                    </div>
+
+                    <div id="info-display">
+                        <div class="mb-3">
+                            <label class="small fw-bold text-muted d-block">Phone Number</label>
+                            <span>{{ patient.PhoneNumber }}</span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small fw-bold text-muted d-block">Age</label>
+                            <span>{{ patient.Age }} Years</span>
+                        </div>
+                        <div class="mb-4">
+                            <label class="small fw-bold text-muted d-block">Gender</label>
+                            <span>{{ gender_name(patient.Gender) }}</span>
+                        </div>
+                        <button class="btn btn-outline-primary w-100 rounded-pill" onclick="toggleEdit(true)">Edit Info</button>
+                    </div>
+
+                    <div id="info-edit" style="display: none;">
+                        <form action="{{ url_for('patient_edit_info') }}" method="post">
+                            <div class="mb-3">
+                                <label class="small fw-bold text-muted d-block">Full Name</label>
+                                <input name="fullName" value="{{ patient.FullName }}" class="form-control form-control-sm" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="small fw-bold text-muted d-block">Phone Number</label>
+                                <input name="phoneNumber" value="{{ patient.PhoneNumber }}" class="form-control form-control-sm" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="small fw-bold text-muted d-block">Age</label>
+                                <input name="age" type="number" value="{{ patient.Age }}" class="form-control form-control-sm" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="small fw-bold text-muted d-block">New Password</label>
+                                <input name="password" type="password" class="form-control form-control-sm" placeholder="Leave blank to keep current">
+                            </div>
+                            <div class="mb-4">
+                                <label class="small fw-bold text-muted d-block">Gender</label>
+                                <select name="gender" class="form-select form-select-sm">
+                                    <option value="1" {% if patient.Gender == GENDER_MALE %}selected{% endif %}>Male</option>
+                                    <option value="2" {% if patient.Gender == GENDER_FEMALE %}selected{% endif %}>Female</option>
+                                </select>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-success flex-grow-1 rounded-pill btn-sm">Save</button>
+                                <button type="button" class="btn btn-secondary flex-grow-1 rounded-pill btn-sm" onclick="toggleEdit(false)">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Appointments -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    <h4 class="headline-sm mb-4">My Appointments</h4>
+
+                    {% if not appointments %}
+                        <div class="text-center py-5">
+                            <ion-icon name="calendar-outline" style="font-size: 4rem; color: #dee2e6;"></ion-icon>
+                            <p class="text-muted mt-3">No appointments booked yet.</p>
+                            <a href="{{ url_for('patient_book') }}" class="btn btn-primary rounded-pill mt-2">Book Now</a>
+                        </div>
+                    {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Doctor</th>
+                                        <th>Schedule</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for app in appointments %}
+                                        <tr>
+                                            <td>
+                                                <div class="fw-bold">{{ app.doctor.FullName }}</div>
+                                                <div class="small text-muted">{{ app.doctor.Specialty }}</div>
+                                            </td>
+                                            <td>{{ app.schedule.Hours }}</td>
+                                            <td>
+                                                {% set badge_class = 'bg-warning text-dark' if app.Status == APPOINTMENT_PENDING else ('bg-success' if app.Status == APPOINTMENT_ACCEPTED else ('bg-info' if app.Status == APPOINTMENT_COMPLETED else ('bg-danger' if app.Status == APPOINTMENT_REJECTED else 'bg-secondary'))) %}
+                                                <span class="badge {{ badge_class }} rounded-pill">{{ appointment_status_name(app.Status) }}</span>
+                                            </td>
+                                            <td>
+                                                {% if app.Status == APPOINTMENT_PENDING %}
+                                                    <form action="{{ url_for('patient_cancel_appointment') }}" method="post">
+                                                        <input type="hidden" name="appointmentId" value="{{ app.Id }}">
+                                                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3">Cancel</button>
+                                                    </form>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function toggleEdit(show) {
+        document.getElementById('info-display').style.display = show ? 'none' : 'block';
+        document.getElementById('info-edit').style.display = show ? 'block' : 'none';
+    }
+</script>
+{% endblock %}
