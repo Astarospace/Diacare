@@ -1,0 +1,189 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="section-padding" style="background-color: var(--alice-blue);">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Sidebar: Search & Filter -->
+            <div class="col-lg-3">
+                <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 100px; z-index: 900;">
+                    <h4 class="headline-sm mb-4">Find a Doctor</h4>
+                    <form method="get" action="{{ url_for('patient_book') }}">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Name</label>
+                            <input name="searchName" value="{{ search_name or '' }}" class="form-control" placeholder="Search by name...">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Specialty</label>
+                            <select name="specialty" class="form-select">
+                                <option value="">All Specialties</option>
+                                <option value="Diabetes Specialist" {% if specialty == 'Diabetes Specialist' %}selected{% endif %}>Diabetes Specialist</option>
+                                <option value="Cardiologist" {% if specialty == 'Cardiologist' %}selected{% endif %}>Cardiologist</option>
+                                <option value="Endocrinologist" {% if specialty == 'Endocrinologist' %}selected{% endif %}>Endocrinologist</option>
+                                <option value="Pediatrician" {% if specialty == 'Pediatrician' %}selected{% endif %}>Pediatrician</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold">Minimum Rating</label>
+                            <select name="minRating" class="form-select">
+                                <option value="">Any Rating</option>
+                                <option value="5" {% if min_rating == 5 %}selected{% endif %}>5 Stars</option>
+                                <option value="4" {% if min_rating == 4 %}selected{% endif %}>4+ Stars</option>
+                                <option value="3" {% if min_rating == 3 %}selected{% endif %}>3+ Stars</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-medical w-100 border-0">SEARCH</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Doctor List -->
+            <div class="col-lg-9">
+                {% if not doctors %}
+                    <div class="text-center py-5">
+                        <h4 class="text-muted">No available doctors found matching your criteria.</h4>
+                    </div>
+                {% else %}
+                    {% for doctor in doctors %}
+                        <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+                            <div class="row g-0">
+                                <div class="col-md-3 bg-light d-flex align-items-center justify-content-center p-3">
+                                    <img src="{{ doctor.image_path }}" alt="{{ doctor.full_name }}" class="img-fluid shadow-sm" style="width: 130px; height: 170px; object-fit: cover; border-radius: 50% / 35%;">
+                                </div>
+                                <div class="col-md-9 p-4">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <h3 class="headline-sm mb-1">{{ doctor.full_name }}</h3>
+                                            <p class="text-muted mb-2">{{ doctor.specialty }}</p>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="text-warning">
+                                                    {% for i in range(1, 6) %}
+                                                        <ion-icon name="{{ 'star' if i <= (doctor.average_rating | round) else 'star-outline' }}"></ion-icon>
+                                                    {% endfor %}
+                                                </div>
+                                                <span class="small fw-bold">({{ "%.1f"|format(doctor.average_rating) }})</span>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column gap-2 text-end">
+                                            <button class="btn btn-outline-primary btn-sm rounded-pill px-3" type="button" data-bs-toggle="collapse" data-bs-target="#reviews-{{ doctor.doctor_id }}">
+                                                View Reviews
+                                            </button>
+                                            <button class="btn btn-outline-success btn-sm rounded-pill px-3" type="button" data-bs-toggle="modal" data-bs-target="#leaveReviewModal-{{ doctor.doctor_id }}">
+                                                Leave a Review
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <p class="small fw-bold mb-2">Available Schedules:</p>
+                                        <form action="{{ url_for('patient_book_appointment') }}" method="post" onsubmit="return validateBooking(this)">
+                                            <div class="d-flex flex-wrap gap-2">
+                                                {% for schedule in doctor.available_schedules %}
+                                                    <input type="radio" class="btn-check" name="scheduleId" id="sch-{{ schedule.Id }}" value="{{ schedule.Id }}" autocomplete="off">
+                                                    <label class="btn btn-outline-secondary btn-sm rounded-3 px-3" for="sch-{{ schedule.Id }}">{{ schedule.Hours }}</label>
+                                                {% endfor %}
+                                            </div>
+                                            <div class="booking-error text-danger small mt-2" style="display: none;">Please pick one of the available schedules.</div>
+                                            <button type="submit" class="btn-medical mt-3 border-0 py-2 px-4" style="font-size: 0.9rem;">BOOK APPOINTMENT</button>
+                                        </form>
+                                    </div>
+
+                                    <!-- Reviews Collapse -->
+                                    <div class="collapse mt-3" id="reviews-{{ doctor.doctor_id }}">
+                                        <div class="bg-light rounded-3 p-3">
+                                            <h6 class="fw-bold mb-3">Patient Reviews</h6>
+                                            {% if not doctor.reviews %}
+                                                <p class="small text-muted mb-0">No reviews yet.</p>
+                                            {% else %}
+                                                {% for review in doctor.reviews %}
+                                                    <div class="mb-3 border-bottom pb-2 last-child-no-border">
+                                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                                            <span class="fw-bold small">{{ review.patient.FullName }}</span>
+                                                            <span class="text-warning small">
+                                                                {% for i in range(review.Rating) %}<ion-icon name="star"></ion-icon>{% endfor %}
+                                                            </span>
+                                                        </div>
+                                                        <p class="small mb-0 text-secondary">{{ review.Comment }}</p>
+                                                    </div>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Leave Review Modal -->
+                        <div class="modal fade" id="leaveReviewModal-{{ doctor.doctor_id }}" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content rounded-4 border-0 shadow">
+                                    <div class="modal-header border-0 pb-0">
+                                        <h5 class="modal-title headline-sm">Review {{ doctor.full_name }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="{{ url_for('patient_leave_review') }}" method="post">
+                                            <input type="hidden" name="doctorId" value="{{ doctor.doctor_id }}">
+                                            <div class="mb-3 text-center">
+                                                <label class="form-label d-block fw-bold mb-2">Your Rating</label>
+                                                <div class="star-rating d-inline-flex gap-1" style="font-size: 2rem; cursor: pointer; color: #dee2e6;">
+                                                    <ion-icon name="star-outline" data-value="1" class="star-btn"></ion-icon>
+                                                    <ion-icon name="star-outline" data-value="2" class="star-btn"></ion-icon>
+                                                    <ion-icon name="star-outline" data-value="3" class="star-btn"></ion-icon>
+                                                    <ion-icon name="star-outline" data-value="4" class="star-btn"></ion-icon>
+                                                    <ion-icon name="star-outline" data-value="5" class="star-btn"></ion-icon>
+                                                    <input type="hidden" name="rating" id="rating-input-{{ doctor.doctor_id }}" required>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Your Comment</label>
+                                                <textarea name="comment" class="form-control" rows="3" placeholder="Share your experience..." required></textarea>
+                                            </div>
+                                            <button type="submit" class="btn-medical w-100 border-0 py-3">SUBMIT REVIEW</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function validateBooking(form) {
+        const selected = form.querySelector('input[name="scheduleId"]:checked');
+        const errorDiv = form.querySelector('.booking-error');
+        if (!selected) {
+            errorDiv.style.display = 'block';
+            return false;
+        }
+        errorDiv.style.display = 'none';
+        return true;
+    }
+
+    document.querySelectorAll('.star-rating').forEach(rating => {
+        const stars = rating.querySelectorAll('.star-btn');
+        const input = rating.querySelector('input');
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                const val = parseInt(star.getAttribute('data-value'));
+                input.value = val;
+                stars.forEach(s => {
+                    const sv = parseInt(s.getAttribute('data-value'));
+                    if (sv <= val) {
+                        s.setAttribute('name', 'star');
+                        s.style.color = '#ffc107';
+                    } else {
+                        s.setAttribute('name', 'star-outline');
+                        s.style.color = '#dee2e6';
+                    }
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}
