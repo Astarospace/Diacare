@@ -1,0 +1,101 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="section-padding" style="background-color: var(--alice-blue); min-height: 80vh;">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Doctor Sidebar -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+                    <div class="mb-4">
+                        <img src="{{ doctor.ImagePath }}" alt="{{ doctor.FullName }}" class="img-fluid rounded-circle shadow-sm mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                        <h3 class="headline-sm mb-1">{{ doctor.FullName }}</h3>
+                        <p class="text-muted small">{{ doctor.Specialty }}</p>
+                    </div>
+
+                    <div class="text-start border-top pt-4">
+                        <div class="mb-3">
+                            <label class="small fw-bold text-muted d-block">Phone Number</label>
+                            <span>{{ doctor.PhoneNumber }}</span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small fw-bold text-muted d-block">Total Reviews</label>
+                            <span>{{ doctor.RatingCount }}</span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="small fw-bold text-muted d-block">Average Rating</label>
+                            <div class="text-warning">
+                                {% set avg = (doctor.RatingSum / doctor.RatingCount) if doctor.RatingCount > 0 else 0 %}
+                                {% for i in range(1, 6) %}
+                                    <ion-icon name="{{ 'star' if i <= (avg | round) else 'star-outline' }}"></ion-icon>
+                                {% endfor %}
+                                <span class="text-dark small ms-1">({{ "%.1f"|format(avg) }})</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appointments Section -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    <h4 class="headline-sm mb-4">Manage Appointments</h4>
+
+                    {% if not doctor.appointments %}
+                        <div class="text-center py-5">
+                            <ion-icon name="calendar-outline" style="font-size: 4rem; color: #dee2e6;"></ion-icon>
+                            <p class="text-muted mt-3">No appointments found.</p>
+                        </div>
+                    {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Patient</th>
+                                        <th>Schedule</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for app in doctor.appointments | sort(attribute='Id', reverse=True) %}
+                                        <tr>
+                                            <td>
+                                                <div class="fw-bold">{{ app.patient.FullName }}</div>
+                                                <div class="small text-muted">{{ app.patient.PhoneNumber }}</div>
+                                            </td>
+                                            <td>{{ app.schedule.Hours }}</td>
+                                            <td>
+                                                {% set badge_class = 'bg-warning text-dark' if app.Status == APPOINTMENT_PENDING else ('bg-success' if app.Status == APPOINTMENT_ACCEPTED else ('bg-info' if app.Status == APPOINTMENT_COMPLETED else ('bg-danger' if app.Status == APPOINTMENT_REJECTED else 'bg-secondary'))) %}
+                                                <span class="badge {{ badge_class }} rounded-pill">{{ appointment_status_name(app.Status) }}</span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex gap-2">
+                                                    {% if app.Status == APPOINTMENT_PENDING %}
+                                                        <form action="{{ url_for('doctor_accept_appointment') }}" method="post">
+                                                            <input type="hidden" name="appointmentId" value="{{ app.Id }}">
+                                                            <button type="submit" class="btn btn-sm btn-success rounded-pill px-3">Accept</button>
+                                                        </form>
+                                                        <form action="{{ url_for('doctor_reject_appointment') }}" method="post">
+                                                            <input type="hidden" name="appointmentId" value="{{ app.Id }}">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3">Reject</button>
+                                                        </form>
+                                                    {% elif app.Status == APPOINTMENT_ACCEPTED %}
+                                                        <form action="{{ url_for('doctor_complete_appointment') }}" method="post">
+                                                            <input type="hidden" name="appointmentId" value="{{ app.Id }}">
+                                                            <button type="submit" class="btn btn-sm btn-primary rounded-pill px-3">Complete</button>
+                                                        </form>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
