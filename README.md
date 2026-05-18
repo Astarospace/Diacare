@@ -75,4 +75,4 @@ Diacare is a comprehensive flask web application that connects patients with doc
 ---
 
 ### License
-**GPL** 
+GPL
