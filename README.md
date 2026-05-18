@@ -33,7 +33,7 @@ Diacare is a comprehensive flask web application that connects patients with doc
 
 | Layer          | Technology                        |
 |----------------|-----------------------------------|
-| Frontend       |      HTML + CSS + JavaScript      |
+| Frontend       |            HTML + CSS             |
 | Backend        |    PyMySQL + SQLAlchemy + Flask   |
 | Database       |             MySQl Server          |
 | Hosting        |     Local/Development Server      |
