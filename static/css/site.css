@@ -1,0 +1,252 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Rubik:wght@400;500;700&display=swap');
+
+:root {
+  --rich-black-fogra-29: hsl(222, 44%, 8%);
+  --midnight-green: hsl(186, 100%, 19%);
+  --verdigris: hsl(182, 100%, 35%);
+  --ming: hsl(186, 72%, 24%);
+  --alice-blue: hsl(187, 25%, 94%);
+  --white: hsl(0, 0%, 100%);
+  --ff-oswald: 'Oswald', sans-serif;
+  --ff-rubik: 'Rubik', sans-serif;
+}
+
+html {
+  font-size: 14px;
+  position: relative;
+  min-height: 100%;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+body {
+  margin-bottom: 0; /* Remove default mb-60 */
+  font-family: var(--ff-rubik);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.container {
+  flex: 1; /* allow main content to push footer down */
+}
+
+main[role="main"] {
+  padding-bottom: 0 !important;
+}
+
+/* Navbar */
+.navbar-medical {
+  background-color: var(--ming);
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+.navbar-medical .navbar-brand {
+  font-family: var(--ff-oswald);
+  font-weight: 700;
+  font-size: 2rem;
+  color: var(--white) !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.navbar-medical .nav-link {
+  color: var(--white) !important;
+  font-family: var(--ff-rubik);
+  font-weight: 500;
+  text-transform: uppercase;
+  margin-right: 15px;
+  transition: 0.25s ease;
+}
+.navbar-medical .nav-link:hover {
+  color: var(--verdigris) !important;
+}
+.navbar-medical .btn-medical {
+  background-color: var(--verdigris);
+  color: var(--white);
+  font-weight: 700;
+  padding: 8px 24px;
+  border-radius: 6px;
+  border: none;
+  text-decoration: none;
+  transition: 0.25s ease;
+}
+.navbar-medical .btn-medical:hover {
+  background-color: var(--ming);
+  color: var(--white);
+}
+.navbar-medical .navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.5);
+}
+.navbar-medical .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba%28255, 255, 255, 1%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+/* Footer */
+.footer-medical {
+  background-color: var(--midnight-green);
+  background-image: url('../images/footer-bg.png');
+  background-size: contain;
+  background-position: top right;
+  background-repeat: no-repeat;
+  color: var(--white);
+  padding: 50px 0 30px 0;
+  margin-top: 0;
+}
+.footer-medical a {
+  color: var(--white);
+  text-decoration: none;
+  opacity: 0.8;
+  transition: 0.25s ease;
+}
+.footer-medical a:hover {
+  color: var(--verdigris);
+  opacity: 1;
+}
+.footer-medical .footer-title {
+  font-family: var(--ff-oswald);
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+.footer-medical .contact-info {
+  opacity: 0.8;
+  line-height: 1.8;
+}
+
+/* Home Page Styles */
+.hero-section {
+  background-color: var(--midnight-green);
+  background-image: url('../images/hero-bg.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  padding: 120px 0;
+  color: var(--white);
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+
+.hero-subtitle {
+  font-weight: 500;
+  position: relative;
+  padding-left: 80px;
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+.hero-subtitle::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 60px;
+  height: 1px;
+  background-color: var(--white);
+}
+
+.hero-title {
+  font-family: var(--ff-oswald);
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 30px;
+}
+
+.service-section {
+  margin-top: -60px;
+  position: relative;
+  z-index: 10;
+}
+.service-card {
+  background-color: var(--white);
+  border-radius: 12px;
+  padding: 30px 20px;
+  text-align: center;
+  box-shadow: 0px 2px 20px hsla(209, 36%, 72%, 0.2);
+  height: 100%;
+}
+.service-card .card-icon {
+  margin-bottom: 25px;
+}
+.service-card .card-title {
+  font-family: var(--ff-oswald);
+  color: var(--midnight-green);
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+.service-card .card-text {
+  color: var(--midnight-green);
+  opacity: 0.8;
+}
+
+.section-padding {
+  padding: 80px 0;
+}
+
+.bg-alice-blue {
+  background-color: var(--alice-blue);
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+
+.headline-md {
+  font-family: var(--ff-oswald);
+  color: var(--midnight-green);
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+.section-subtitle {
+  color: var(--verdigris);
+  font-weight: 500;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.text-independece {
+  color: hsl(236, 14%, 39%);
+  line-height: 1.8;
+  font-size: 1.1rem;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Back to top button */
+.back-top-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: var(--verdigris);
+  color: var(--white) !important;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  border-radius: 50%;
+  text-decoration: none;
+  transition: 0.3s ease;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 1050;
+  border: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.back-top-btn.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-10px);
+}
+
+.back-top-btn:hover {
+  background-color: var(--ming);
+  color: var(--white) !important;
+}
